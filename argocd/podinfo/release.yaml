@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: podinfo
+  namespace: argocd
+  finalizers:
+  - "resources-finalizer.argocd.argoproj.io"
+spec:
+  destination:
+    namespace: default
+    server: 'https://kubernetes.default.svc'
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+  project: default
+  source:
+  - repoURL: 'https://stefanprodan.github.io/podinfo'
+    targetRevision: '>=5.*.*'
+    chart: podinfo
+    helm:
+      valueFiles:
+      - $values/env/k3s/podinfo/values.yaml
+  - repoURL: 'https://github.com/denisl78/poc'
+    targetRevision: dev
+    ref: values
