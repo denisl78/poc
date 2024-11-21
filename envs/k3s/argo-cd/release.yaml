@@ -1,0 +1,28 @@
+global:
+  addPrometheusAnnotations: true
+controller:
+  metrics:
+    enabled: true
+server:
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+  metrics:
+    enabled: true
+repoServer:
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+configs:
+  secret:
+    # admin@321
+    argocdServerAdminPassword: $2a$10$aZZTKfjBwwN1aN73uJG69O9ZJ7lVZrpi.r/JN60ikh3SOFhAmv2Bm
+  repositories:
+    poc:
+      url: https://github.com/denisl78/poc
+      name: token-validator
+      path: token-validator
+    podinfo:
+      url: https://stefanprodan.github.io/podinfo
+      name: podinfo
+      type: helm
