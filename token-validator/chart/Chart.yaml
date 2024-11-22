@@ -1,0 +1,5 @@
+apiVersion: v2
+name: token-validator-cronjob
+description: A Helm Chart for token-validator Kubernetes Cron Job
+type: application
+version: 0.0.1

@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: token-validator
+  namespace: argocd
+  finalizers:
+  - "resources-finalizer.argocd.argoproj.io"
+spec:
+  destination:
+    namespace: default
+    server: 'https://kubernetes.default.svc'
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+  project: default
+  sources:
+  - repoURL: 'https://github.com/denisl78/poc'
+    chart: token-validator
+    path: token-validator
+    helm:
+      valueFiles:
+      - $values/envs/k3s/token-validator/values.yaml
+  - repoURL: 'https://github.com/denisl78/poc'
+    targetRevision: dev
+    ref: values

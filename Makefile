@@ -1,37 +1,33 @@
 # Makefile
-
 K3S_VERSION ?= v1.30.6-k3s1
-IMAGE_NAME := k3s-service
-GIT_HASH := $(shell git log --pretty=format:'%h' -1)
+K3S_IMAGE_NAME := k3s-service
+VALIDATOR_VERSION := $(shell git describe --tags --always --abbrev=24)
+VALIDATOR_IMAGE_NAME := token-validator
 
-TAG := $(K3S_VERSION)
-IMAGE_FILE_ALPINE := $(IMAGE_NAME).$(TAG).img
-REMOTE_IMAGE_NAME := $(DOCKER_REGISTRY)/$(DOCKER_REPO)/$(IMAGE_NAME)
-$(info $$(TAG) is [${TAG}])
-$(info $$(RELEASE_BUILD) is [${RELEASE_BUILD}])
-
-### Default rule for building locally ###
+$(info $$(K3S_VERSION) is [${K3S_VERSION}])
 
 .PHONY: all
 all:
 	$(MAKE) build
 
-$(IMAGE_FILE_ALPINE): k3s/Dockerfile.alpine
-	docker build --rm \
-		--build-arg K3S_VERSION="$(subst -,+,$(K3S_VERSION))" \
-		-t "$(IMAGE_NAME):$(TAG)" -f $< k3s/
-
 .PHONY: clean
-clean:
-	rm -f *.img
+clean: k3s-stop
 
 ### Build contract ###
-
 .PHONY: k3s-build
 k3s-build: build-k3s-alpine
+	docker build --rm \
+                --build-arg K3S_VERSION="$(subst -,+,$(K3S_VERSION))" \
+                -t "$(K3S_IMAGE_NAME):$(TAG)" -f k3s/Dockerfile.alpine k3s/
 
 .PHONY: build-k3s-alpine
-build-k3s-alpine: $(IMAGE_FILE_ALPINE)
+build-k3s-alpine: $(IMAGE_K3S_ALPINE)
+
+.PHONY: token-validator-build
+token-validator-build:
+	docker build \
+                -t "$(VALIDATOR_IMAGE_NAME):$(VALIDATOR_VERSION)" \
+		-f token-validator/Dockerfile token-validator/
 
 K3S_SERVICE_NAME ?= k3s-service
 export K3S_SERVICE_NAME
@@ -65,7 +61,7 @@ endif
 
 KUBECONFIG_FILE ?= $(PWD)/envs/k3s/k3s.yaml
 .PHONY: k3s-kubeconfig
-k3s-kubeconfig:
+k3s-kubeconfig: k3s-start
 	while [ "$$(curl -s -o /dev/null -w ''%{http_code}'' http://$(K3S_SERVICE_HOST):$(K3S_SERVICE_PORT)/k3s.yaml)" != "200" ];do sleep 3;done;
 	curl $(K3S_SERVICE_HOST):$(K3S_SERVICE_PORT)/k3s.yaml -o $(KUBECONFIG_FILE);
 	sed -i "s/127.0.0.1/$(K3S_SERVICE_HOST)/g" $(KUBECONFIG_FILE);
