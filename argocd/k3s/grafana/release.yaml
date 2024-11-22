@@ -16,11 +16,13 @@ spec:
     targetRevision: 6.52.2
     helm:
       valueFiles:
-      - $values/env/k3s/grafana/values.yaml
+      - $values/envs/k3s/grafana/values.yaml
   - repoURL: 'https://github.com/denisl78/poc'
     targetRevision: dev
     ref: values
-
+  - repoURL: 'https://github.com/denisl78/poc.git'
+    targetRevision: dev
+    path: 'argocd/k3s/grafana/'
   syncPolicy:
     automated:
       prune: true
