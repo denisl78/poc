@@ -6,4 +6,4 @@ image:
 cronjob:
   name: token-validator
   schedule: "*/5 * * * *"
-  command: /usr/local/bin/token-validator.py
+  command: token-validator.py

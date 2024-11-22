@@ -18,7 +18,7 @@ clean: k3s-stop
 k3s-build: build-k3s-alpine
 	docker build --rm \
                 --build-arg K3S_VERSION="$(subst -,+,$(K3S_VERSION))" \
-                -t "$(K3S_IMAGE_NAME):$(TAG)" -f k3s/Dockerfile.alpine k3s/
+                -t "$(K3S_IMAGE_NAME):$(K3S_VERSION)" -f k3s/Dockerfile.alpine k3s/
 
 .PHONY: build-k3s-alpine
 build-k3s-alpine: $(IMAGE_K3S_ALPINE)
@@ -28,6 +28,11 @@ token-validator-build:
 	docker build \
                 -t "$(VALIDATOR_IMAGE_NAME):$(VALIDATOR_VERSION)" \
 		-f token-validator/Dockerfile token-validator/
+
+token-validator-publish: token-validator-build
+	skopeo copy --dest-no-creds --dest-tls-verify=false \
+		docker-daemon:$(VALIDATOR_IMAGE_NAME):$(VALIDATOR_VERSION) \
+		docker://$(K3S_SERVICE_HOST):5000/$(VALIDATOR_IMAGE_NAME):$(VALIDATOR_VERSION)
 
 K3S_SERVICE_NAME ?= k3s-service
 export K3S_SERVICE_NAME
