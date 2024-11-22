@@ -28,6 +28,10 @@ make
 ```
 K3S_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3s-service)
 ```
+### K3S kubeconfig
+```
+export KUBECONFIG=envs/k3s/k3s.yaml
+```
 ### URLS
 #### Grafana
 ##### user/pass : 
