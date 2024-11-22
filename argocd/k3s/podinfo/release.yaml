@@ -25,3 +25,6 @@ spec:
   - repoURL: 'https://github.com/denisl78/poc'
     targetRevision: dev
     ref: values
+  - repoURL: 'https://github.com/denisl78/poc.git'
+    targetRevision: dev
+    path: 'argocd/k3s/podinfo/'
