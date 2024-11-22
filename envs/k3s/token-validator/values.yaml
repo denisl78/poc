@@ -1,4 +1,5 @@
-env: k3S
+redis_url: 'podinfo-redis.default'
+podinfo_url: 'http://podinfo.default:9898'
 image:
   repository: localhost:5000/token-validator
 #  tag: ba35c6f8281e290ed33e2b88
