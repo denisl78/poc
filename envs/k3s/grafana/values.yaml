@@ -1,7 +1,7 @@
 adminUser: "admin"
 adminPassword: "admin@321"
-service:
-  type: NodePort
+#service:
+#  type: NodePort
 datasources:
   datasources.yaml:
     apiVersion: 1
