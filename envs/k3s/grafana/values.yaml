@@ -1,7 +1,8 @@
 adminUser: "admin"
 adminPassword: "admin@321"
-#service:
-#  type: NodePort
+service:
+  type: NodePort
+  nodePort: 3000
 datasources:
   datasources.yaml:
     apiVersion: 1
@@ -36,4 +37,3 @@ dashboards:
     argocd:
       url: https://raw.githubusercontent.com/argoproj/argo-cd/refs/heads/master/examples/dashboard.json
       token: ''
-

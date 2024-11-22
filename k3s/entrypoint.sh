@@ -17,7 +17,7 @@ if [ -n "${PV_DATA_FOLDER_PATH}" ];then
 	mkdir -p ${PV_DATA_FOLDER_PATH} && chmod -R 777 ${PV_DATA_FOLDER_PATH}
 fi 
 
-#
+# for prometheus-node-exporter make shared or slave mount as we run under docker
 mount --make-rshared /
 # Start k3s server
 exec /usr/local/bin/k3s "$@"
