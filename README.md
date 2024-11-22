@@ -20,36 +20,40 @@
    10. Argo release deploy
 
 ## Bring up K3S environment
-1. Run
+### Run
 ```
 make
 ```
-2. Get K3S_IP Address
+### Get K3S_IP Address
 ```
 K3S_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' k3s-service)
 ```
-3. URLS:
-   4. Grafana
-    * user/pass : `admin/admin@321`
-    * ip : `$K3S_IP:3000`
-   7. Argo
-    * user/pass : `admin/admin@321`
-    * ip : `$K3S_IP:30080`
+### URLS
+#### Grafana
+##### user/pass : 
+`admin/admin@321`
+##### ip : 
+`$K3S_IP:3000`
+#### Argo
+##### user/pass : 
+`admin/admin@321`
+##### ip :
+`$K3S_IP:30080`
 
 ## Commiting changes on `token-validator`
-1. Build docker
+### Build docker
 ```
 make token-validator-build
 ```
-3. Publish to K3S registry
+### Publish to K3S registry
 ```
 make token-validator-publish
 ```
-5. Update docker tag on helm values `envs/k3s/podinfo/values.yaml`
+### Update docker tag on helm values `envs/k3s/podinfo/values.yaml`
 ```
 git describe --tags --always --abbrev=24
 ```
-6. Commit and push
+### Commit and push
 
 ## Cleaning
 ```
