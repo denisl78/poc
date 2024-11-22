@@ -1,8 +1,10 @@
 # Token Validator
 
 ## Requirement
-
-- `terraform`
+- Packages
+  - `terraform`
+  - `skopeo`
+  - `git`
 - Running `docker` service
 
 ## Info
@@ -33,3 +35,15 @@ K3S_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{en
    7. Argo
       8. user/pass : `admin/admin@321`
       9. ip : `$K3S_IP:30080`
+
+## Commiting changes on `token-validator`
+1. Build docker
+`make token-validator-build`
+2. Publish to K3S registry
+`make token-validator-publish`
+3. Update docker tag on helm values `envs/k3s/podinfo/values.yaml`
+`git describe --tags --always --abbrev=24`
+   4. Commit and push
+
+## Cleaning
+`make clean`

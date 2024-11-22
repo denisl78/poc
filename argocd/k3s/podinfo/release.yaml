@@ -20,9 +20,9 @@ spec:
     targetRevision: dev
     path: 'argocd/k3s/podinfo/'
     helm:
-      releaseName: token-validator
+      releaseName: podinfo
       valueFiles:
-      - $values/envs/k3s/token-validator/values.yaml
+      - $values/envs/k3s/podinfo/values.yaml
   - repoURL: 'https://github.com/denisl78/poc'
     targetRevision: dev
     ref: values
