@@ -1,6 +1,6 @@
 env: k3s
 image:
-  repository: localhost
+  repository: localhost:5000/token-validator
   tag: 79dff2050c4ad541a6b9cac5
   pullPolicy: IfNotPresent
 cronjob:

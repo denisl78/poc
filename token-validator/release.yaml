@@ -17,9 +17,10 @@ spec:
   project: default
   sources:
   - repoURL: 'https://github.com/denisl78/poc'
-    chart: token-validator
-    path: token-validator
+    path: token-validator/chart
+    targetRevision: dev
     helm:
+      releaseName: token-validator
       valueFiles:
       - $values/envs/k3s/token-validator/values.yaml
   - repoURL: 'https://github.com/denisl78/poc'
