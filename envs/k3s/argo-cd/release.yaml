@@ -9,6 +9,8 @@ server:
     minReplicas: 1
   metrics:
     enabled: true
+  service:
+    type: NodePort
 repoServer:
   autoscaling:
     enabled: false
