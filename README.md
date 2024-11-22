@@ -12,12 +12,12 @@
 2. Using docker registry on K3S
 3. Terraform only for argo deploy
 4. Any other deployments:
-   5. Argo release under `argocd/k3s/`
-   6. Helm values related to K3S deployment under `envs/k3s/`
+   - Argo release under `argocd/k3s/`
+   - Helm values related to K3S deployment under `envs/k3s/`
 7. Token Validator under `token-validator`, contains:
-   8. Python script
-   9. Helm template under `chart` path
-   10. Argo release deploy
+   - Python script
+   - Helm template under `chart` path
+   - Argo release deploy
 
 ## Bring up K3S environment
 ### Run
