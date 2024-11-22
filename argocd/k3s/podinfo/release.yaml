@@ -16,15 +16,13 @@ spec:
     - CreateNamespace=true
   project: default
   sources:
-  - repoURL: 'https://stefanprodan.github.io/podinfo'
-    targetRevision: '>=5.*.*'
-    chart: podinfo
-    helm:
-      valueFiles:
-      - $values/envs/k3s/podinfo/values.yaml
-  - repoURL: 'https://github.com/denisl78/poc'
-    targetRevision: dev
-    ref: values
   - repoURL: 'https://github.com/denisl78/poc.git'
     targetRevision: dev
     path: 'argocd/k3s/podinfo/'
+    helm:
+      releaseName: token-validator
+      valueFiles:
+      - $values/envs/k3s/token-validator/values.yaml
+  - repoURL: 'https://github.com/denisl78/poc'
+    targetRevision: dev
+    ref: values
