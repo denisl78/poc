@@ -8,23 +8,22 @@ import redis
 
 def validate_token(podinfo_url, redis_url):
     # epoch_time as key, token as value
-    data = int(time.time())
+    data = str(int(time.time()))
     # get token
-    logging.info('Get toke from podinfo [%s]', podinfo_url)
-    response = requests.post(podinfo_url + '/token', data=data,
-                             headers={'Content-Type': 'application/x-www-form-urlencoded'})
-    if response.status_code != '200':
-        logging.error('Failed to get token')
+    logging.info('Get token from podinfo [%s]', podinfo_url)
+    response = requests.post(podinfo_url + '/token', data=data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+    if response.status_code != 200:
+        logging.error('Got [%s] error from [%s]', response.status_code, podinfo_url)
         sys.exit(1)
     token = response.json()['token']
 
     # validate token
-    logging.info('Validating token [%s] against podinfo', token)
+    logging.info('Validating token for [%s] against [%s]', data, podinfo_url)
     response = requests.get(podinfo_url + '/token/validate', headers={
         'Authorization': 'Bearer ' + token,
     })
-    if response.status_code != '200':
-        logging.error('Can\'t validate token')
+    if response.status_code != 200:
+        logging.error('Got [%s] error while validating token', response.status_code)
         sys.exit(1)
 
     # validate with redis
@@ -32,9 +31,13 @@ def validate_token(podinfo_url, redis_url):
         logging.warning('Running without Redis url')
         sys.exit(0)
 
-    logging.info('Validate if token on redis [%s]', redis_url)
+    logging.info('Validating token on redis [%s]', redis_url)
     r = redis.Redis(host=redis_url, port=6379, decode_responses=True)
-    if not r:
+    try:
+        r.ping
+    except:
+        sys.exit(1)
+    if not r.get(token):
         logging.error('Failed to validate token against Redis')
         sys.exit(1)
 
