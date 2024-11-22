@@ -53,7 +53,11 @@ make token-validator-build
 ```
 make token-validator-publish
 ```
-### Update docker tag on helm values `envs/k3s/podinfo/values.yaml`
+### Update docker tag on helm values
+```
+envs/k3s/token-validator/values.yaml
+```
+with related tag
 ```
 git describe --tags --always --abbrev=24
 ```
