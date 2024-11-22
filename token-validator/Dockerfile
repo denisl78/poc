@@ -5,4 +5,4 @@ COPY requirements.txt /tmp
 
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-CMD ["python", "token-validator.py"]
+CMD ["python", "/usr/local/bin/token-validator.py"]

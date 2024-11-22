@@ -1,4 +1,6 @@
 env: k3s
+redis_url: 'podinfo-redis.default'
+podinfo_url: 'http://podinfo.default:9898'
 image:
   repository: localhost:5000/token-validator
   tag: 0.1
@@ -6,4 +8,4 @@ image:
 cronjob:
   name: token-validator
   schedule: "*/5 * * * *"
-  command: token-validator.py
+  command: /usr/local/bin/token-validator.py
