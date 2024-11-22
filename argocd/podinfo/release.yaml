@@ -15,13 +15,13 @@ spec:
     syncOptions:
     - CreateNamespace=true
   project: default
-  source:
+  sources:
   - repoURL: 'https://stefanprodan.github.io/podinfo'
     targetRevision: '>=5.*.*'
     chart: podinfo
     helm:
       valueFiles:
-      - $values/env/k3s/podinfo/values.yaml
+      - $values/envs/k3s/podinfo/values.yaml
   - repoURL: 'https://github.com/denisl78/poc'
     targetRevision: dev
     ref: values

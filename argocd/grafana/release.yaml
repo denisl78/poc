@@ -10,7 +10,7 @@ spec:
     namespace: monitoring
     server: https://kubernetes.default.svc
   project: default
-  source:
+  sources:
   - repoURL: https://grafana.github.io/helm-charts
     chart: grafana
     targetRevision: 6.52.2

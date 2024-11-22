@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prometheus
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: monitoring
+    server: https://kubernetes.default.svc
+  project: default
+  sources: 
+    - repoURL: 'https://prometheus-community.github.io/helm-charts'
+      chart: prometheus
+      targetRevision: 19.7.2
+      helm:
+        valueFiles:
+          - $value/envs/k3s/prometheus/values.yaml
+    - repoURL: 'https://github.com/denisl78/poc.git'
+      targetRevision: dev
+      ref: value
+    - repoURL: 'https://github.com/denisl78/poc.git'
+      targetRevision: dev
+      path: 'argocd/k3s/prometheus/'
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
