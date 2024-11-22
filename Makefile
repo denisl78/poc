@@ -100,6 +100,7 @@ deploy-argo: k3s-kubeconfig
 	@terraform -chdir=terraform/ init
 	@terraform -chdir=terraform/ apply -auto-approve
 
+export KUBECONFIG=$(KUBECONFIG_FILE)
 .PHONY: deploy-prometheus
 deploy-prometheus:
 	@kubectl apply -f argocd/k3s/prometheus/release.yaml
