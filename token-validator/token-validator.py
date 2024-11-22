@@ -6,7 +6,8 @@ import requests
 import time
 import redis
 
-def validate_token(podinfo_url, redis_url):
+
+def get_token(podinfo_url):
     # epoch_time as key, token as value
     data = str(int(time.time()))
     # get token
@@ -25,21 +26,27 @@ def validate_token(podinfo_url, redis_url):
     if response.status_code != 200:
         logging.error('Got [%s] error while validating token', response.status_code)
         sys.exit(1)
+    else:
+        return token
 
+
+def validate_token(token, redis_url):
     # validate with redis
     if not redis_url:
         logging.warning('Running without Redis url')
         sys.exit(0)
 
     logging.info('Validating token on redis [%s]', redis_url)
-    r = redis.Redis(host=redis_url, port=6379, decode_responses=True)
+    r = redis.Redis(host=redis_url, port=6379, decode_responses=True, socket_connect_timeout=1)
     try:
-        r.ping
+        r.ping()
     except:
+        logging.error('Redis [%] not available', redis_url)
         sys.exit(1)
     if not r.get(token):
         logging.error('Failed to validate token against Redis')
         sys.exit(1)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -62,4 +69,5 @@ if __name__ == "__main__":
     ch.setFormatter(logging.Formatter(FORMAT))
     logger.addHandler(ch)
 
-    validate_token(podinfo_url, redis_url)
+    token = get_token(podinfo_url)
+    validate_token(token, redis_url)

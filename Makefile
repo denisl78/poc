@@ -8,7 +8,16 @@ $(info $$(K3S_VERSION) is [${K3S_VERSION}])
 
 .PHONY: all
 all:
-	$(MAKE) build
+	$(MAKE) token-validator-build
+	$(MAKE) build-k3s-alpine
+	$(MAKE) k3s-start
+	$(MAKE) k3s-kubeconfig
+	$(MAKE) deploy-argo
+	$(MAKE) deploy-prometheus
+	$(MAKE) deploy-grafana
+	$(MAKE) deploy-podinfo
+	$(MAKE) token-validator-publish
+	$(MAKE) deploy-token-validator
 
 .PHONY: clean
 clean: k3s-stop
@@ -29,10 +38,14 @@ token-validator-build:
                 -t "$(VALIDATOR_IMAGE_NAME):$(VALIDATOR_VERSION)" \
 		-f token-validator/Dockerfile token-validator/
 
+.PHONY: token-validator-publish
 token-validator-publish: token-validator-build
-	skopeo copy --dest-no-creds --dest-tls-verify=false \
+	@skopeo copy --dest-no-creds --dest-tls-verify=false \
 		docker-daemon:$(VALIDATOR_IMAGE_NAME):$(VALIDATOR_VERSION) \
 		docker://$(K3S_SERVICE_HOST):5000/$(VALIDATOR_IMAGE_NAME):$(VALIDATOR_VERSION)
+	@skopeo copy --dest-no-creds --dest-tls-verify=false \
+                docker-daemon:$(VALIDATOR_IMAGE_NAME):$(VALIDATOR_VERSION) \
+                docker://$(K3S_SERVICE_HOST):5000/$(VALIDATOR_IMAGE_NAME):latest
 
 K3S_SERVICE_NAME ?= k3s-service
 export K3S_SERVICE_NAME
@@ -50,7 +63,7 @@ endif
 K3S_SERVICE_PORT := 18081
 K3S_REGISTRY_PORT := 5000
 K3S_SERVICE_PORTS := 6443:6443 ${K3S_SERVICE_PORT}:${K3S_SERVICE_PORT} \
-        $(K3S_REGISTRY_PORT):$(K3S_REGISTRY_PORT) 40000:40000 50000:50000 \
+        $(K3S_REGISTRY_PORT):$(K3S_REGISTRY_PORT) \
         $(K3S_CUSTOM_PORTS)
 
 .PHONY: k3s-start
@@ -62,11 +75,14 @@ ifneq ($(K3S_SERVICE_RUN),$(K3S_SERVICE_NAME))
 		--privileged \
 		--shm-size=2g \
 		--name $(K3S_SERVICE_NAME) $(K3S_SERVICE_NAME):$(K3S_VERSION)
+#	@sleep 10
 endif
 
 KUBECONFIG_FILE ?= $(PWD)/envs/k3s/k3s.yaml
+
 .PHONY: k3s-kubeconfig
 k3s-kubeconfig: k3s-start
+	K3S_SERVICE_HOST=$(shell docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(K3S_SERVICE_RUN))
 	while [ "$$(curl -s -o /dev/null -w ''%{http_code}'' http://$(K3S_SERVICE_HOST):$(K3S_SERVICE_PORT)/k3s.yaml)" != "200" ];do sleep 3;done;
 	curl $(K3S_SERVICE_HOST):$(K3S_SERVICE_PORT)/k3s.yaml -o $(KUBECONFIG_FILE);
 	sed -i "s/127.0.0.1/$(K3S_SERVICE_HOST)/g" $(KUBECONFIG_FILE);
@@ -77,3 +93,25 @@ ifneq ($(K3S_SERVICE_RUN),)
 	@docker rm -f $(K3S_SERVICE_RUN)
 endif
 
+# Application deploy
+# Argo
+.PHONY: deploy-argo
+deploy-argo: k3s-kubeconfig
+	@terraform -chdir=terraform/ init
+	@terraform -chdir=terraform/ apply -auto-approve
+
+.PHONY: deploy-prometheus
+deploy-prometheus:
+	@kubectl apply -f argocd/k3s/prometheus/release.yaml
+
+.PHONY: deploy-grafana
+deploy-grafana:
+	@kubectl apply -f argocd/k3s/grafana/release.yaml
+
+.PHONY: deploy-podinfo
+deploy-podinfo:
+	@kubectl apply -f argocd/k3s/podinfo/release.yaml
+
+.PHONY: deploy-token-validator
+deploy-token-validator:
+	@kubectl apply -f token-validator/release.yaml
