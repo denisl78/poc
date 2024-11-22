@@ -20,7 +20,7 @@ spec:
   - repoURL: 'https://github.com/denisl78/poc'
     targetRevision: dev
     ref: values
-  - repoURL: 'https://github.com/denisl78/poc.git'
+  - repoURL: 'https://github.com/denisl78/poc'
     targetRevision: dev
     path: 'argocd/k3s/grafana/'
   syncPolicy:
