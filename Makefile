@@ -9,7 +9,7 @@ $(info $$(K3S_VERSION) is [${K3S_VERSION}])
 .PHONY: all
 all:
 	$(MAKE) token-validator-build
-	$(MAKE) build-k3s-alpine
+	$(MAKE) k3s-build
 	$(MAKE) k3s-start
 	$(MAKE) k3s-kubeconfig
 	$(MAKE) deploy-argo
