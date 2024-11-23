@@ -5,6 +5,8 @@
   - `terraform`
   - `skopeo`
   - `git`
+  - `kubectl`
+  - `make`
 - Running `docker` service
 
 ## Info
