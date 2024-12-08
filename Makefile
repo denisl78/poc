@@ -75,7 +75,6 @@ ifneq ($(K3S_SERVICE_RUN),$(K3S_SERVICE_NAME))
 		--privileged \
 		--shm-size=2g \
 		--name $(K3S_SERVICE_NAME) $(K3S_SERVICE_NAME):$(K3S_VERSION)
-#	@sleep 10
 endif
 
 KUBECONFIG_FILE ?= $(PWD)/envs/k3s/k3s.yaml
@@ -103,16 +102,16 @@ deploy-argo: k3s-kubeconfig
 export KUBECONFIG=$(KUBECONFIG_FILE)
 .PHONY: deploy-prometheus
 deploy-prometheus:
-	@kubectl apply -f argocd/k3s/prometheus/release.yaml
+	@kubectl apply -f envs/k3s/prometheus/release.yaml
 
 .PHONY: deploy-grafana
 deploy-grafana:
-	@kubectl apply -f argocd/k3s/grafana/release.yaml
+	@kubectl apply -f envs/k3s/grafana/release.yaml
 
 .PHONY: deploy-podinfo
 deploy-podinfo:
-	@kubectl apply -f argocd/k3s/podinfo/release.yaml
+	@kubectl apply -f envs/k3s/podinfo/release.yaml
 
 .PHONY: deploy-token-validator
 deploy-token-validator:
-	@kubectl apply -f token-validator/release.yaml
+	@kubectl apply -f envs/k3s/token-validator/release.yaml
