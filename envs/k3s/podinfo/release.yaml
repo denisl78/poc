@@ -28,4 +28,6 @@ spec:
   - repoURL: 'https://github.com/denisl78/poc.git'
     targetRevision: dev
     path: 'argocd/k3s/podinfo/'
-
+  syncPolicy:
+    automated:
+      selfHeal: true

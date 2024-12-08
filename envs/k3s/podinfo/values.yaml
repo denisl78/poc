@@ -1,5 +1,5 @@
 replicaCount: '1'
-cache: ""
+cache: "tcp://podinfo-redis.default:6379"
 # Redis deployment
 redis:
   enabled: true
