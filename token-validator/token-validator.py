@@ -73,6 +73,7 @@ def validate_token(epoc_time, token):
         r.delete(epoc_time)
 
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--log", help="log level", default="info")
