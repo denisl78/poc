@@ -9,4 +9,3 @@ cronjob:
   schedule: "*/5 * * * *"
   command: ["/usr/local/bin/token-validator.py"]
   args: []
-
