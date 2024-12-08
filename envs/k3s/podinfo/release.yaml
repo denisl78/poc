@@ -22,10 +22,10 @@ spec:
     helm:
       valueFiles:
       - $values/envs/k3s/podinfo/values.yaml
-  - repoURL: 'https://github.com/denisl78/poc'
-    targetRevision: dev
-    ref: values
   - repoURL: 'https://github.com/denisl78/poc.git'
     targetRevision: dev
-    path: 'argocd/k3s/podinfo/'
-
+    path: 'envs/k3s/podinfo/'
+    ref: values
+  syncPolicy:
+    automated:
+      selfHeal: true

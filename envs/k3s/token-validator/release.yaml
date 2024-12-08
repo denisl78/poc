@@ -26,3 +26,6 @@ spec:
   - repoURL: 'https://github.com/denisl78/poc'
     targetRevision: dev
     ref: values
+  syncPolicy:
+    automated:
+      selfHeal: true

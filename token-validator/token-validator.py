@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse
+import json
 import logging
 import sys, os
 import requests
@@ -9,28 +10,41 @@ import redis
 
 def get_token(podinfo_url):
     # epoch_time as key, token as value
-    data = str(int(time.time()))
+    epoc_time = str(int(time.time()))
     # get token
     logging.info('Get token from podinfo [%s]', podinfo_url)
-    response = requests.post(podinfo_url + '/token', data=data, headers={'Content-Type': 'application/x-www-form-urlencoded'})
+    response = requests.post(podinfo_url + '/token', data=epoc_time, headers={'Content-Type': 'application/x-www-form-urlencoded'})
     if response.status_code != 200:
         logging.error('Got [%s] error from [%s]', response.status_code, podinfo_url)
         sys.exit(1)
     token = response.json()['token']
 
     # validate token
-    logging.info('Validating token for [%s] against [%s]', data, podinfo_url)
+    logging.info('Validating token for [%s] against [%s]', epoc_time, podinfo_url)
     response = requests.get(podinfo_url + '/token/validate', headers={
         'Authorization': 'Bearer ' + token,
     })
     if response.status_code != 200:
         logging.error('Got [%s] error while validating token', response.status_code)
         sys.exit(1)
-    else:
-        return token
+
+    if not redis_url:
+        logging.warning('Running without Redis url')
+        return
+
+    # create podinfo token for future validation in cache(redis)
+    token_json = {"token": token}
+
+    headers = {'Content-Type': 'application/json', }
+    response = requests.post(podinfo_url + '/cache/' + epoc_time, headers=headers, json=token_json)
+    if response.status_code != 202:
+        logging.error('Got [%s] error while posting token to cache server', response.status_code)
+        sys.exit(1)
+
+    return epoc_time, token_json['token']
 
 
-def validate_token(token, redis_url):
+def validate_token(epoc_time, token):
     # validate with redis
     if not redis_url:
         logging.warning('Running without Redis url')
@@ -43,9 +57,18 @@ def validate_token(token, redis_url):
     except:
         logging.error('Redis [%] not available', redis_url)
         sys.exit(1)
-    if not r.get(token):
-        logging.error('Failed to validate token against Redis')
+
+    podinfo_cache = r.get(epoc_time)
+    if not podinfo_cache:
+        logging.error('Failed to get key [%] in Redis', epoc_time)
         sys.exit(1)
+    cache_token = json.loads(podinfo_cache)
+
+    if token != cache_token['token']:
+        logging.error('Cache token [%s] and podinfo token [%s] are not the same', cache_token['token'], token)
+        sys.exit(1)
+    else:
+        logging.info('Token [%s] validated on podinfo cache', epoc_time)
 
 
 if __name__ == "__main__":
@@ -69,5 +92,5 @@ if __name__ == "__main__":
     ch.setFormatter(logging.Formatter(FORMAT))
     logger.addHandler(ch)
 
-    token = get_token(podinfo_url)
-    validate_token(token, redis_url)
+    epoc, token = get_token(podinfo_url)
+    validate_token(epoc, token)
