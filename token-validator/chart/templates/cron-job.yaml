@@ -4,8 +4,8 @@ metadata:
   name: {{ .Values.cronjob.name }}
 spec:
   schedule: {{ .Values.cronjob.schedule | quote }}
-  successfulJobsHistoryLimit: 5
-  failedJobsHistoryLimit: 5
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
       template:

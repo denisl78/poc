@@ -68,7 +68,10 @@ def validate_token(epoc_time, token):
         logging.error('Cache token [%s] and podinfo token [%s] are not the same', cache_token['token'], token)
         sys.exit(1)
     else:
-        logging.info('Token [%s] validated on podinfo cache', epoc_time)
+        logging.info('Successfully validated token [%s] on podinfo cache', epoc_time)
+        # deleting validated key
+        r.delete(epoc_time)
+
 
 
 if __name__ == "__main__":
