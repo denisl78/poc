@@ -1,0 +1,12 @@
+redis_url: ''
+podinfo_url: ''
+image:
+  repository: localhost:5000/token-validator
+  tag: 0.1
+  pullPolicy: IfNotPresent
+cronjob:
+  name: token-validator
+  schedule: "*/5 * * * *"
+  command: ["/usr/local/bin/token-validator.py"]
+  args: []
+

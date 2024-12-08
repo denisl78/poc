@@ -1,0 +1,4 @@
+pushgateway:
+  enabled: false
+alertmanager:
+  enabled: false

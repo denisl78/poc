@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.cronjob.name }}
+spec:
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: {{ .Chart.Name }}
+              image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              env:
+                - name: ENV
+                  value: {{ .Values.env }}
+                - name: REDIS_URL
+                  value: {{ .Values.redis_url }}
+                - name: PODINFO_URL
+                  value: {{ .Values.podinfo_url }}
+              {{- with .Values.cronjob.command }}
+              command:
+              {{ toYaml . | indent 2 }}
+            {{- end }}
+          restartPolicy: OnFailure

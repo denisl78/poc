@@ -1,0 +1,5 @@
+replicaCount: '1'
+cache: ""
+# Redis deployment
+redis:
+  enabled: true

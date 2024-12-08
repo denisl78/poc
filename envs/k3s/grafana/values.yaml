@@ -1,0 +1,39 @@
+adminUser: "admin"
+adminPassword: "admin@321"
+service:
+  type: NodePort
+  nodePort: 3000
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.monitoring.svc.cluster.local
+        access: proxy
+        isDefault: true
+      - name: loki
+        type: loki
+        url: http://loki.monitoring.svc.cluster.local
+        access: proxy
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: "default"
+        orgId: 1
+        folder: ""
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+dashboards:
+  default:
+    kubernetes:
+      gnetId: 10000
+      revision: 1
+      datasource: Prometheus
+    argocd:
+      url: https://raw.githubusercontent.com/argoproj/argo-cd/refs/heads/master/examples/dashboard.json
+      token: ''
