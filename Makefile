@@ -75,7 +75,6 @@ ifneq ($(K3S_SERVICE_RUN),$(K3S_SERVICE_NAME))
 		--privileged \
 		--shm-size=2g \
 		--name $(K3S_SERVICE_NAME) $(K3S_SERVICE_NAME):$(K3S_VERSION)
-#	@sleep 10
 endif
 
 KUBECONFIG_FILE ?= $(PWD)/envs/k3s/k3s.yaml
